@@ -1,23 +1,24 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const userRoutes = require('./routes/users');
 
 const app = express();
-const PORT = 3000;
-
-
+const PORT = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 
-const userRoutes = require('./routes/userRoutes');
-const postRoutes = require('./routes/postRoutes');
-const commentRoutes = require('./routes/commentRoutes');
+// Connect to MongoDB
+mongoose.connect('mongodb://localhost:27017/myapp', { useNewUrlParser: true, useUnifiedTopology: true });
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+db.once('open', () => {
+  console.log('Connected to MongoDB');
+});
 
-
+// Routes
 app.use('/users', userRoutes);
-app.use('/posts', postRoutes);
-app.use('/comments', commentRoutes);
 
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`Server is running on http://localhost:${PORT}`);
 });
